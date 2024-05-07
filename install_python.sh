@@ -24,15 +24,30 @@ echo "正在配置安装 Python 3.11.9..."
 
 # Compile and install (use `-j` to speed up the process based on your CPU core count)
 echo "正在编译安装 Python 3.11.9，这可能需要几分钟的时间..."
-make altinstall -j$(nproc) || echo "编译失败，请检查错误日志和系统配置！"
+if make altinstall -j$(nproc); then
+    echo "Python 3.11.9 安装成功。"
+    
+    # Update python and python3 links to the newly installed Python version
+    echo "正在更新系统默认 Python 版本..."
+    if [ -f /usr/local/bin/python3.11 ]; then
+        update-alternatives --install /usr/bin/python python /usr/local/bin/python3.11 1
+        update-alternatives --install /usr/bin/python3 python3 /usr/local/bin/python3.11 1
+        
+        # Install Poetry
+        echo "正在安装 Poetry..."
+        curl -sSL https://install.python-poetry.org | python3 -
 
-# Update python and python3 links to the newly installed Python version
-echo "正在更新系统默认 Python 版本..."
-if [ -f /usr/local/bin/python3.11 ]; then
-    update-alternatives --install /usr/bin/python python /usr/local/bin/python3.11 1
-    update-alternatives --install /usr/bin/python3 python3 /usr/local/bin/python3.11 1
+        # Add Poetry to PATH in .bashrc
+        echo "将 Poetry 添加到 PATH..."
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+        source ~/.bashrc
+
+        echo "Poetry 安装并配置完成。"
+    else
+        echo "安装 Python 3.11.9 失败，未找到 /usr/local/bin/python3.11"
+    fi
 else
-    echo "安装 Python 3.11.9 失败，未找到 /usr/local/bin/python3.11"
+    echo "Python 编译失败，请检查错误日志和系统配置！"
 fi
 
 # Cleanup installation files
@@ -41,4 +56,4 @@ cd ..
 rm -rf Python-3.11.9
 rm Python-3.11.9.tgz
 
-echo "Python 3.11.9 安装脚本执行完毕。"
+echo "安装脚本执行完毕。"
