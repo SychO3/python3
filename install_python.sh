@@ -1,9 +1,8 @@
 #!/bin/bash
 
 # 检查并安装必要的工具
-apt-get update &&apt-get upgrade
-apt update -y && apt dist-upgrade -y && apt install -y curl && apt install -y socat && apt install -y vim
-apt-get install -y xz-utils openssl gawk file wget screen && screen -S os
+apt-get update && apt-get upgrade -y
+apt install -y curl socat vim xz-utils openssl gawk file wget screen build-essential
 
 # 下载 Python
 echo "正在下载 Python 3.11.9..."
