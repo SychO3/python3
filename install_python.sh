@@ -4,9 +4,6 @@
 apt-get update && apt-get upgrade -y
 apt install -y curl socat vim xz-utils openssl gawk file wget screen build-essential libffi-dev libssl-dev zlib1g-dev
 
-# Start a new screen session
-# screen -S os
-
 # Download Python
 echo "正在下载 Python 3.11.9..."
 wget https://www.python.org/ftp/python/3.11.9/Python-3.11.9.tgz
