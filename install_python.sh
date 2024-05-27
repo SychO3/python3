@@ -2,11 +2,22 @@
 
 # Update and install necessary tools and libraries
 apt-get update && apt-get upgrade -y
-apt install -y build-essential libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev curl socat vim xz-utils openssl gawk file wget screen git
+apt-get install -y build-essential libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev curl socat vim xz-utils openssl gawk file wget screen git
+
+# Check if update-alternatives is installed
+if ! command -v update-alternatives &> /dev/null; then
+    echo "update-alternatives could not be found, installing..."
+    apt-get install -y update-alternatives
+fi
 
 # Download Python
 echo "正在下载 Python 3.11.9..."
-wget https://www.python.org/ftp/python/3.11.9/Python-3.11.9.tgz
+wget -O Python-3.11.9.tgz https://www.python.org/ftp/python/3.11.9/Python-3.11.9.tgz
+
+# Verify the downloaded file (optional, requires a checksum)
+# echo "正在验证下载文件的完整性..."
+# wget https://www.python.org/ftp/python/3.11.9/Python-3.11.9.tgz.sha256
+# sha256sum -c Python-3.11.9.tgz.sha256
 
 # Extract
 echo "正在解压 Python 3.11.9..."
@@ -21,7 +32,7 @@ echo "正在配置安装 Python 3.11.9..."
 
 # Compile and install (use `-j` to speed up the process based on your CPU core count)
 echo "正在编译安装 Python 3.11.9，这可能需要几分钟的时间..."
-if make altinstall -j$(nproc); then
+if make altinstall -j$(($(nproc) > 8 ? 8 : $(nproc))); then
     echo "Python 3.11.9 安装成功。"
     
     # Update python and python3 links to the newly installed Python version
@@ -37,6 +48,7 @@ if make altinstall -j$(nproc); then
         # Add Poetry to PATH in .bashrc
         echo "将 Poetry 添加到 PATH..."
         echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+        # source ~/.bashrc to make changes effective in the current shell
         source ~/.bashrc
 
         echo "Poetry 安装并配置完成。"
